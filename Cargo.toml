@@ -1,0 +1,22 @@
+[package]
+name = "freshrss-image-cache-service-rs"
+version = "0.1.0"
+edition = "2021"
+
+[workspace.lints.clippy]
+cargo = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+
+[dependencies]
+anyhow = { version = "1", features = ["backtrace"] }
+axum = "0.7"
+futures-util = "0.3"
+hex = "0.4"
+reqwest = { version = "0.12", features = ["stream"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1.0"
+sha3 = { version = "0.10", features = ["asm"] }
+tokio = { version = "1", features = ["full"] }
+tracing = "0.1"
+tracing-subscriber = "0.3"
+url = { version = "2.5", features = ["serde"] }

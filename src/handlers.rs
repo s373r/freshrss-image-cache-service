@@ -9,6 +9,10 @@ use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use url::Url;
 
+pub fn root_router() -> Router {
+    Router::new().route("/", get(get_image_handler).post(proactive_cache_handler))
+}
+
 #[derive(Deserialize, Debug)]
 struct ImageParams {
     url: Url,
@@ -50,8 +54,4 @@ async fn proactive_cache_handler(
     }
 
     Json(Response { status: "OK" }).into_response()
-}
-
-pub fn root_router() -> Router {
-    Router::new().route("/", get(get_image_handler).post(proactive_cache_handler))
 }

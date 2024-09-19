@@ -27,10 +27,13 @@ impl AppService {
 
     pub async fn get_image(&self, image_url: &Url) -> Result<CachedImage> {
         let cached_image_paths = self.get_file_name_path(image_url)?;
+        let mut extracted_from_cache = true;
 
         if !cached_image_paths.data_path.as_path().exists() {
             self.download_and_save(image_url, cached_image_paths.clone())
                 .await?;
+
+            extracted_from_cache = false;
         }
 
         let (image_content, mime_type) = tokio::try_join!(
@@ -41,6 +44,7 @@ impl AppService {
         Ok(CachedImage {
             data: image_content,
             mime_type,
+            extracted_from_cache,
         })
     }
 

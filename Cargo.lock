@@ -283,7 +283,6 @@ dependencies = [
  "hex",
  "reqwest",
  "serde",
- "serde_json",
  "sha3",
  "tokio",
  "tracing",

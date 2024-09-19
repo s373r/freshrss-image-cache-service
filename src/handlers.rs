@@ -5,7 +5,7 @@ use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::routing::get;
 use axum::{Extension, Json, Router};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use url::Url;
 
@@ -40,11 +40,16 @@ async fn proactive_cache_handler(
         return StatusCode::UNAUTHORIZED.into_response();
     }
 
-    app_service
-        .get_image(&payload.url)
-        .await
-        .map_err(HttpError::Internal)
-        .into_response()
+    if let Err(e) = app_service.save_image(&payload.url).await {
+        return HttpError::Internal(e).into_response();
+    }
+
+    #[derive(Serialize)]
+    struct Response {
+        status: &'static str,
+    }
+
+    Json(Response { status: "OK" }).into_response()
 }
 
 pub fn root_router() -> Router {

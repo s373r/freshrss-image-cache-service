@@ -1,4 +1,4 @@
-use crate::cached_image::CachedImage;
+use crate::dtos::CachedImage;
 use anyhow::{bail, Result};
 use sha3::{Digest, Sha3_256};
 use std::path::PathBuf;

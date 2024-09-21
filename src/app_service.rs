@@ -1,5 +1,5 @@
 use crate::dtos::CachedImage;
-use anyhow::{bail, Result};
+use anyhow::{bail, Context, Result};
 use sha3::{Digest, Sha3_256};
 use std::path::PathBuf;
 use tokio::fs;
@@ -31,7 +31,8 @@ impl AppService {
 
         if !cached_image_paths.data_path.as_path().exists() {
             self.download_and_save(image_url, cached_image_paths.clone())
-                .await?;
+                .await
+                .with_context(|| "Failed to download and save an cached image")?;
 
             extracted_from_cache = false;
         }
@@ -86,7 +87,14 @@ impl AppService {
         };
 
         // 1. Save the image content
-        let mut image_file = fs::File::create(cached_image_paths.data_path).await?;
+        let mut image_file = fs::File::create(cached_image_paths.data_path.clone())
+            .await
+            .with_context(|| {
+                format!(
+                    "Failed to create the '{}' file",
+                    cached_image_paths.data_path.display()
+                )
+            })?;
         let mut response_content_stream = image_response.bytes_stream();
 
         use futures_util::stream::StreamExt;

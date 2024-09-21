@@ -1,0 +1,11 @@
+services:
+  cache_server:
+    image: ghcr.io/s373r/freshrss-image-cache-service-rs:latest
+    ports:
+      - 3000:3000
+    volumes:
+      - ./images:/usr/src/app/images
+    environment:
+      - APP_PORT=3000
+      - APP_ACCESS_TOKEN=TODO_REPLACE_ME_WITH_RANDOM_VALUE
+      - APP_IMAGES_DIR=./images

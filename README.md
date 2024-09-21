@@ -32,7 +32,7 @@ services:
       - APP_IMAGES_DIR=./images
 ```
 
-NOTE: Make sure to replace APP_ACCESS_TOKEN with a unique value!
+⚠️ Make sure to replace `APP_ACCESS_TOKEN` with a unique value!
 
 ## Release procedure
 

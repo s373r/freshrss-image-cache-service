@@ -19,9 +19,12 @@ LABEL org.opencontainers.image.source=https://github.com/s373r/freshrss-image-ca
 
 RUN apt update \
     && apt install -y \
+        ca-certificates \
         libssl3 \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && update-ca-certificates
 
+WORKDIR /usr/src/app
 COPY --from=builder /usr/local/cargo/bin/freshrss-image-cache-service-rs /usr/local/bin/freshrss-image-cache-service-rs
 
 ENTRYPOINT ["freshrss-image-cache-service-rs"]

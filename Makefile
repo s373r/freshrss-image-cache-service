@@ -11,12 +11,29 @@ lint:
 start:
 	cargo run
 
+image image-push: IMAGE_EXISTS = $(shell \
+		docker manifest inspect $(IMAGE_REPO)/$(IMAGE):$(VERSION) > /dev/null 2>&1 \
+			&& echo yes \
+	)
+
 .PHONY: image
 image:
+	@if [ "$(IMAGE_EXISTS)" = "yes" ]; then \
+		echo "The image with version $(VERSION) is already existed"; \
+		echo "Looks like you forgot to update Cargo.toml"; \
+		exit 1; \
+	fi
+
 	docker build -t $(IMAGE_REPO)/$(IMAGE):$(VERSION) .
 
 .PHONY: image-push
 image-push:
+	@if [ "$(IMAGE_EXISTS)" = "yes" ]; then \
+		echo "The image with version $(VERSION) is already existed"; \
+		echo "Looks like you forgot to update Cargo.toml"; \
+		exit 1; \
+	fi
+
 	docker push $(IMAGE_REPO)/$(IMAGE):$(VERSION)
 
 	docker tag $(IMAGE_REPO)/$(IMAGE):$(VERSION) $(IMAGE_REPO)/$(IMAGE):latest

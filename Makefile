@@ -9,7 +9,10 @@ lint:
 
 .PHONY: start
 start:
-	cargo run
+	APP_PORT=3000 \
+	APP_ACCESS_TOKEN=TEST_TOKEN \
+	APP_IMAGES_DIR=./images \
+		cargo run
 
 image image-push: IMAGE_EXISTS = $(shell \
 		docker manifest inspect $(IMAGE_REPO)/$(IMAGE):$(VERSION) > /dev/null 2>&1 \

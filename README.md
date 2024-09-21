@@ -1,6 +1,6 @@
 # freshrss-image-cache-service-rs
 
-`freshrss-image-cache-service-rs` is a simple service for caching images locally, specifically designed for
+A simple service for caching images locally, specifically designed for
 the [freshrss-image-cache-pluginx](https://github.com/Victrid/freshrss-image-cache-plugin) extension. This can be
 particularly useful in the case of time-limited links to images (e.g. in the case of [rsshub.app](https://rsshub.app/))
 

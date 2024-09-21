@@ -7,7 +7,7 @@ lint:
 	cargo fmt --check
 	cargo clippy --workspace --all-targets -- -D warnings
 
-.PHONY: lint
+.PHONY: start
 start:
 	cargo run
 
@@ -15,7 +15,7 @@ start:
 image:
 	docker build -t $(IMAGE_REPO)/$(IMAGE):$(VERSION) .
 
-.PHONY: kamu-base-push
+.PHONY: image-push
 image-push:
 	docker push $(IMAGE_REPO)/$(IMAGE):$(VERSION)
 

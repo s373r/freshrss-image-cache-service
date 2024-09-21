@@ -17,7 +17,7 @@ async fn main() -> Result<()> {
         .with_span_events(FmtSpan::NEW | FmtSpan::CLOSE)
         .init();
 
-    let listener = tokio::net::TcpListener::bind(format!("127.0.0.1:{port}")).await?;
+    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{port}")).await?;
 
     info!("Listening on http://{}", listener.local_addr()?);
 

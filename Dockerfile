@@ -20,7 +20,7 @@ LABEL org.opencontainers.image.source=https://github.com/s373r/freshrss-image-ca
 RUN apt update \
     && apt install -y \
         ca-certificates \
-        libssl3 \
+        openssl \
     && rm -rf /var/lib/apt/lists/* \
     && update-ca-certificates
 

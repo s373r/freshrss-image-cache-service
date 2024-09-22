@@ -35,6 +35,7 @@ services:
       - APP_PORT=3000
       - APP_ACCESS_TOKEN=TODO_REPLACE_ME_WITH_RANDOM_VALUE
       - APP_IMAGES_DIR=./images
+      - APP_NO_ANSI_COLORS=1
 ```
 
 ⚠️ Make sure to replace `APP_ACCESS_TOKEN` with a unique value!

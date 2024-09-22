@@ -18,7 +18,7 @@ struct ImageParams {
     url: Url,
 }
 
-#[tracing::instrument(level = "info", skip_all, fields(%url))]
+#[tracing::instrument(level = "debug", skip_all, fields(%url))]
 async fn get_image_handler(
     Extension(app_service): Extension<Arc<AppService>>,
     Query(ImageParams { url }): Query<ImageParams>,
@@ -35,7 +35,7 @@ struct CacheProactiveImage {
     url: Url,
 }
 
-#[tracing::instrument(level = "info", skip_all)]
+#[tracing::instrument(level = "debug", skip_all, fields(%payload.url))]
 async fn proactive_cache_handler(
     Extension(app_service): Extension<Arc<AppService>>,
     Json(payload): Json<CacheProactiveImage>,

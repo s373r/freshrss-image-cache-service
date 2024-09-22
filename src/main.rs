@@ -6,6 +6,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use tracing::info;
 use tracing_subscriber::fmt::format::FmtSpan;
+use tracing_subscriber::EnvFilter;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -14,7 +15,10 @@ async fn main() -> Result<()> {
     let images_dir = std::env::var("APP_IMAGES_DIR").with_context(|| "APP_IMAGES_DIR")?;
     let no_colors = std::env::var("APP_NO_ANSI_COLORS").is_err();
 
+    let env_filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info"));
+
     tracing_subscriber::fmt()
+        .with_env_filter(env_filter)
         .with_span_events(FmtSpan::NEW | FmtSpan::CLOSE)
         .with_ansi(no_colors)
         .init();

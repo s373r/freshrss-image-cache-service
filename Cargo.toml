@@ -17,5 +17,5 @@ serde = { version = "1", features = ["derive"] }
 sha3 = { version = "0.10", features = ["asm"] }
 tokio = { version = "1", features = ["full"] }
 tracing = "0.1"
-tracing-subscriber = "0.3"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 url = { version = "2.5", features = ["serde"] }

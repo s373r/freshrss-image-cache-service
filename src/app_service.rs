@@ -8,6 +8,7 @@ use url::Url;
 
 #[derive(Clone)]
 pub struct CachedImagePaths {
+    data_folder: PathBuf,
     data_path: PathBuf,
     mime_type_path: PathBuf,
 }
@@ -67,10 +68,14 @@ impl AppService {
             hex::encode(&hash[..])
         };
         let mime_type_file_name = format!("{image_content_file_name}.mime-type");
+        // Use two first letters of the file name for the intermediate directory, to
+        // make sure we don't end up with a huge number of files.
+        let data_folder = self.images_dir.join(&image_content_file_name[0..2]);
 
         Ok(CachedImagePaths {
-            data_path: self.images_dir.join(image_content_file_name),
-            mime_type_path: self.images_dir.join(mime_type_file_name),
+            data_path: data_folder.join(image_content_file_name),
+            mime_type_path: data_folder.join(mime_type_file_name),
+            data_folder,
         })
     }
 
@@ -79,6 +84,9 @@ impl AppService {
         image_url: &Url,
         cached_image_paths: CachedImagePaths,
     ) -> Result<()> {
+        // Make sure the directory for the file exists
+        fs::create_dir_all(cached_image_paths.data_folder).await?;
+
         let client = reqwest::Client::new();
         let image_response = client.get(image_url.clone()).send().await?;
 

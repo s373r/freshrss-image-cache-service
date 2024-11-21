@@ -1,3 +1,5 @@
+use std::error::Error;
+use std::fmt;
 use crate::dtos::CachedImage;
 use anyhow::{bail, Context, Result};
 use sha3::{Digest, Sha3_256};
@@ -16,6 +18,16 @@ pub struct CachedImagePaths {
 pub struct AppService {
     access_token: String,
     images_dir: PathBuf,
+}
+
+
+#[derive(Debug)]
+struct CaptchaError;
+impl Error for CaptchaError {}
+impl fmt::Display for CaptchaError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Received a CAPTCHA page instead of an image")
+    }
 }
 
 impl AppService {
@@ -93,6 +105,13 @@ impl AppService {
         let Some(mime_type) = image_response.headers().get("content-type").cloned() else {
             bail!("Failed to get the content-type header for image: {image_url}");
         };
+        
+        // CloudFlare often returns CAPTCHAs for images, so we need to check for that.
+        let mime_str = String::from_utf8_lossy(mime_type.as_bytes());
+        if !mime_str.starts_with("image/") && !mime_str.starts_with("video/") {
+            return Err(CaptchaError.into());
+        }
+        // TODO: use CloudFlare resolvers?
 
         // 1. Save the image content
         let mut image_file = fs::File::create(cached_image_paths.data_path.clone())

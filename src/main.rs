@@ -27,10 +27,21 @@ async fn main() -> Result<()> {
 
     info!("Listening on http://{}", listener.local_addr()?);
 
-    let app_service = Arc::new(AppService::new(access_token, PathBuf::from(images_dir)));
-    let app = Router::new()
+    let app_service = Arc::new(AppService::new(access_token.clone(),
+                                               PathBuf::from(images_dir.clone()), false));
+    let safe = Router::new()
         .nest("/", root_router())
         .layer(Extension(app_service));
+
+    let unsafe_app = Arc::new(AppService::new(access_token.clone(),
+                                              PathBuf::from(images_dir.clone()), true));
+    let unsafe_router = Router::new()
+        .nest("/", root_router())
+        .layer(Extension(unsafe_app));
+
+    let app = Router::new()
+        .nest("/notls", unsafe_router)
+        .nest("/", safe);
 
     axum::serve(listener, app).await?;
 

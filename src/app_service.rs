@@ -18,6 +18,7 @@ pub struct CachedImagePaths {
 pub struct AppService {
     access_token: String,
     images_dir: PathBuf,
+    disable_https_validation: bool,
 }
 
 
@@ -31,10 +32,11 @@ impl fmt::Display for CaptchaError {
 }
 
 impl AppService {
-    pub fn new(access_token: String, images_dir: PathBuf) -> Self {
+    pub fn new(access_token: String, images_dir: PathBuf, disable_https_validation: bool) -> Self {
         Self {
             access_token,
             images_dir,
+            disable_https_validation,
         }
     }
 
@@ -99,7 +101,9 @@ impl AppService {
         // Make sure the directory for the file exists
         fs::create_dir_all(cached_image_paths.data_folder).await?;
 
-        let client = reqwest::Client::new();
+        let client = reqwest::Client::builder()
+            .danger_accept_invalid_certs(self.disable_https_validation)
+            .build().expect("Failed to build the HTTP client");
         let image_response = client.get(image_url.clone()).send().await?;
 
         let Some(mime_type) = image_response.headers().get("content-type").cloned() else {

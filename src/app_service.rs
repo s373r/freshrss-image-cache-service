@@ -15,6 +15,7 @@ pub struct CachedImagePaths {
     data_folder: PathBuf,
     data_path: PathBuf,
     mime_type_path: PathBuf,
+    url_path: PathBuf,
 }
 
 #[derive(Clone, Debug)]
@@ -67,6 +68,10 @@ impl AppService {
             extracted_from_cache = false;
         }
 
+        if !cached_image_paths.url_path.as_path().exists() {
+            fs::write(cached_image_paths.url_path, image_url.to_string()).await?;
+        }
+
         let (image_content, mime_type) = tokio::try_join!(
             fs::read(cached_image_paths.data_path),
             fs::read_to_string(cached_image_paths.mime_type_path)
@@ -97,6 +102,7 @@ impl AppService {
             hex::encode(&hash[..])
         };
         let mime_type_file_name = format!("{image_content_file_name}.mime-type");
+        let url_file_name = format!("{image_content_file_name}.url");
         // Use two first letters of the file name for the intermediate directory, to
         // make sure we don't end up with a huge number of files.
         let data_folder = self.images_dir.join(&image_content_file_name[0..2]);
@@ -104,6 +110,7 @@ impl AppService {
         Ok(CachedImagePaths {
             data_path: data_folder.join(image_content_file_name),
             mime_type_path: data_folder.join(mime_type_file_name),
+            url_path: data_folder.join(url_file_name),
             data_folder,
         })
     }
@@ -150,8 +157,9 @@ impl AppService {
             image_file.write_all(&chunk).await?;
         }
 
-        // 2. Save the mime-type
+        // 2. Save the mime-type and url
         fs::write(cached_image_paths.mime_type_path, mime_type).await?;
+        fs::write(cached_image_paths.url_path, image_url.to_string()).await?;
 
         Ok(())
     }
